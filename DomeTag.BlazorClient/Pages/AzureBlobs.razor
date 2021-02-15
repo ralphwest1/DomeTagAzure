@@ -1,0 +1,37 @@
+﻿@page "/azureblobs"
+@inject IHttpClientFactory HttpClientFactory
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (blobs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    foreach (var blob in blobs)
+    {
+        <div style="border:1px solid gray; margin-bottom:10px; width: 202px;">
+            <img src="@blob.Uri" alt="@blob.Name" width="200" />
+        </div>
+    }
+}
+
+@code {
+    private BlobDto[] blobs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("DomeTagAPI");
+        blobs = await client.GetFromJsonAsync<BlobDto[]>("blobs");
+    }
+
+    public class BlobDto
+    {
+        public string Name { get; set; }
+        public string Uri { get; set; }
+        public string ContentType { get; set; }
+    }
+}
